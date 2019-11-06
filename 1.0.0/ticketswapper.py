@@ -12,9 +12,10 @@ sys.setrecursionlimit(9999)
 
 # Get the url from terminal
 url = sys.argv[1]
+category = int(sys.argv[2])
 
 # Extract JSON info
-def check_ticketswap_offers(url, counter = 0):
+def check_ticketswap_offers(url, category, counter = 0):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
     ldjson_soup = soup.findAll("script", attrs = {'type':"application/json"})
@@ -25,10 +26,9 @@ def check_ticketswap_offers(url, counter = 0):
         time.sleep(seconds)
         counter += 1
         print("Try %s" % counter)
-        return check_ticketswap_offers(url, counter)
-    path = ldjson['props']['pageProps']['data']['node']['event']['types']['edges'][0]['node']['availableListings']['edges'][0]['node']['uri']['path'].split('?')[0]
-    url_open = "https://ticketswap.nl" + path
-    webbrowser.get('chrome').open_new(url_open)
+        return check_ticketswap_offers(url, category, counter)
+    url_open = ldjson['props']['pageProps']['data']['node']['event']['types']['edges'][category-1]['node']['availableListings']['edges'][0]['node']['uri']['url']
+    webbrowser.open_new(url_open)
 
 # Run ticketswapper
-check_ticketswap_offers(url)
+check_ticketswap_offers(url, category)
